@@ -15,12 +15,11 @@ struct Osoba
         wiek = age;
         imie = std::move(name);
     }
-
     void updateData(const Osoba& objInp)
     {
         wiek = objInp.wiek;
         imie = std::move(objInp.imie);
-    }
+    }\
     Osoba& operator ()( Osoba* objInp)
     {
         if(&objInp != nullptr)
@@ -30,14 +29,10 @@ struct Osoba
         return  *this;
     }
 
-
-
-
 };
 
 
-
-
+short OsobaComparator(Osoba* obj1, Osoba* obj2);
 
 
 template<typename Data_type>
@@ -83,8 +78,6 @@ public:
             array[i] = otherDynamic.array[i];
         }
     }
-
-
     void addObj(Data_type * obj) {
         if (currentSize == maxSize) {
             // Realokacja tablicy, jeśli osiągnięto maksymalny rozmiar
@@ -137,18 +130,53 @@ public:
                    "\n====================================================================================";
     }
 
+    void switchObj (unsigned int indexOne, unsigned int indexTwo )
+    {
+        if (indexOne < currentSize && indexTwo < currentSize)
+        {
+            Data_type temp = array[indexOne];
+            array[indexOne] = array[indexTwo];
+            array[indexTwo] = temp;
+        }
+        else
+        {
+            std::cerr << "Nieprawidłowy indeks." << std::endl;
+        }
+    }
+
+    bool BubbleSort(bool growing)
+    {
+        for ( int i = 0 ; i < currentSize - 1 ; i++ ) {
+            for ( int j = 1 ; j < currentSize - i ; j++ ) {
+
+                if(growing) {
+                    if ( OsobaComparator(array[ j - 1 ], array[ j ]) >= 1 ) {
+                        switchObj(j - 1, j);
+                    }
+                }
+                else {
+                    if ( OsobaComparator(array[ j - 1 ], array[ j ]) <= -1 ) {
+                        switchObj(j - 1, j);
+                    }
+                }
+            }
+        }
+        return true;
+    }
 };
 bool printOne(Dynamic_Array<Osoba*>*lista ,unsigned int index)
 {
+    bool ret = false;
     lista->print();
     if(index>lista->currentSize){return false;}
     Osoba *printObj = lista->getObj(index);
     std::cout <<std::endl<<"Index: "<<index<<"\t"<<"Imie: "<< printObj->imie<<"\t\t"
               <<"Wiek: "<<printObj->wiek << std::endl;  // Wyświetlenie pola Osoba
-    return true;
+    return ret;
 }
 bool printBetween(Dynamic_Array<Osoba*>*lista ,unsigned int indexStart,unsigned int indexEnd)
 {
+    bool ret = false;
     lista->print();
     if(indexStart>lista->currentSize){return false;}
     else if(indexEnd>lista->currentSize){return false;}
@@ -157,25 +185,27 @@ bool printBetween(Dynamic_Array<Osoba*>*lista ,unsigned int indexStart,unsigned 
         std::cout << std::endl << "Index: " << i << "\t" << "Imie: " << printObj->imie << "\t\t"
                   << "Wiek: " << printObj->wiek ;  // Wyświetlenie pola Osoba
     }
-    return true;
+    return ret;
 }
 bool printAll(Dynamic_Array<Osoba*>*lista )
 {
+    bool ret = false;
     lista->print();
     for(int i = 0 ; i < lista->currentSize ; i++) {
         Osoba *printObj = lista->getObj(i);
         std::cout << std::endl << "Index: " << i << "\t" << "Imie: " << printObj->imie << "\t\t"
                   << "Wiek: " << printObj->wiek ;  // Wyświetlenie pola Osoba
     }
-    return true;
+    return ret;
 }
 bool printShortFront(Dynamic_Array<Osoba*>*lista ,unsigned int count)
 {
+    bool ret = false;
     lista->print();
     if(lista->currentSize <= count)
     {
         printAll(lista);
-        return true;
+        return ret;
     }
     std::cout<<"\n\n"<<count<<" Pierwszych Obiektow";
     for(int i = 0 ; i < count ; i++) {
@@ -183,15 +213,16 @@ bool printShortFront(Dynamic_Array<Osoba*>*lista ,unsigned int count)
         std::cout << std::endl << "Index: " << i << "\t" << "Imie: " << printObj->imie << "\t\t"
                   << "Wiek: " << printObj->wiek ;  // Wyświetlenie pola Osoba
     }
-    return true;
+    return ret;
 }
 bool printShortBack(Dynamic_Array<Osoba*>*lista ,unsigned int count)
 {
+    bool ret = false;
     lista->print();
     if(lista->currentSize <= count)
     {
         printAll(lista);
-        return true;
+        return ret;
     }
     std::cout<<"\n\n"<<count<<" Ostatnich Obiektow";
     for(int i = count ; i > 0 ; i--) {
@@ -199,17 +230,25 @@ bool printShortBack(Dynamic_Array<Osoba*>*lista ,unsigned int count)
         std::cout << std::endl << "Index: " << i << "\t" << "Imie: " << printObj->imie << "\t\t"
                   << "Wiek: " << printObj->wiek ;  // Wyświetlenie pola Osoba
     }
-    return true;
+    return ret;
+}
+
+
+short OsobaComparator(Osoba* obj1 , Osoba* obj2)//0 dla rownych , 1 dla wiekszej lewej wartosci , -1 dla mniejszej lewej
+{
+    if(obj1->wiek == obj2->wiek)return 0;
+    if(obj1->wiek > obj2->wiek)return 1;
+    if(obj1->wiek < obj2->wiek)return -1;
 }
 
 int main ()
 {
-    Osoba * obj = new Osoba(123,"jajkeczko");
-    Osoba * obj1 = new Osoba(222,"kajkeczko");
-    Osoba * obj2 = new Osoba(3,"jajo");
-    Osoba * obj3 = new Osoba(123,"jajkeczko");
-    Osoba * obj4 = new Osoba(222,"kajkeczko");
-    Osoba * obj5 = new Osoba(3,"jajo");
+    Osoba * obj = new Osoba(645,"jajkeczko");
+    Osoba * obj1 = new Osoba(76,"kajkeczko");
+    Osoba * obj2 = new Osoba(234,"jajo");
+    Osoba * obj3 = new Osoba(34,"jajkeczko");
+    Osoba * obj4 = new Osoba(227656772,"kajkeczko");
+    Osoba * obj5 = new Osoba(43453,"jajo");
 
     Dynamic_Array<Osoba*>*DynArray = new Dynamic_Array<Osoba*>();
     DynArray->addObj(&obj);
@@ -218,8 +257,10 @@ int main ()
     DynArray->addObj(&obj3);
     DynArray->addObj(&obj4);
     DynArray->addObj(&obj5);
-    printShortBack(DynArray,5);
-
+    DynArray->BubbleSort(true);
+    printAll(DynArray);
+    DynArray->BubbleSort(false);
+    printAll(DynArray);
 
 
 
