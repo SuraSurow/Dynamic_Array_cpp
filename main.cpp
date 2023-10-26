@@ -1,6 +1,10 @@
 #include <iostream>
 #include <string>
 #include <utility>
+#include <math.h>
+#include <chrono>
+#include <random>
+
 struct Osoba
 {
     unsigned int wiek;
@@ -8,12 +12,17 @@ struct Osoba
     Osoba()
     {
         wiek = 1;
-        imie = "as";
+        imie = "none";
     }
     Osoba(unsigned int age , std::string name)
     {
         wiek = age;
         imie = std::move(name);
+    }
+    Osoba(unsigned int age )
+    {
+        wiek = age;
+        imie = "none";
     }
     void updateData(const Osoba& objInp)
     {
@@ -53,7 +62,7 @@ public:
     }
     ~Dynamic_Array()
     {
-        delete array[];
+        delete array;
     }
     Dynamic_Array(const Dynamic_Array<Data_type> &otherDynamic )
     {
@@ -241,29 +250,78 @@ short OsobaComparator(Osoba* obj1 , Osoba* obj2)//0 dla rownych , 1 dla wiekszej
     if(obj1->wiek < obj2->wiek)return -1;
 }
 
-int main ()
+unsigned int randValue(unsigned int min , unsigned int max)
 {
-    Osoba * obj = new Osoba(645,"jajkeczko");
-    Osoba * obj1 = new Osoba(76,"kajkeczko");
-    Osoba * obj2 = new Osoba(234,"jajo");
-    Osoba * obj3 = new Osoba(34,"jajkeczko");
-    Osoba * obj4 = new Osoba(227656772,"kajkeczko");
-    Osoba * obj5 = new Osoba(43453,"jajo");
-
-    Dynamic_Array<Osoba*>*DynArray = new Dynamic_Array<Osoba*>();
-    DynArray->addObj(&obj);
-    DynArray->addObj(&obj1);
-    DynArray->addObj(&obj2);
-    DynArray->addObj(&obj3);
-    DynArray->addObj(&obj4);
-    DynArray->addObj(&obj5);
-    DynArray->BubbleSort(true);
-    printAll(DynArray);
-    DynArray->BubbleSort(false);
-    printAll(DynArray);
+    std::random_device dev;
+    std::mt19937 random(dev());
+    std::uniform_int_distribution<std::mt19937::result_type> zakres(min, max);
+    return zakres(random);
+}
 
 
 
+#include <iostream>
+#include <chrono>
+
+// ...
+
+#include <iostream>
+#include <chrono>
+
+// ...
+int main () {
+    Dynamic_Array<Osoba *> *DynamicznaTablica = new Dynamic_Array<Osoba *>();
+    int elementsToInsert = 10000000;
+
+    std::chrono::steady_clock::time_point loop_start = std::chrono::steady_clock::now();
+
+    for ( int i = 0 ; i < elementsToInsert ; i++ ) {
+        std::chrono::steady_clock::time_point add_start = std::chrono::steady_clock::now();
+        Osoba *someObj = new Osoba(randValue(0, 1000));
+        DynamicznaTablica->addObj(&someObj);
+    }
+
+    std::chrono::steady_clock::time_point loop_end = std::chrono::steady_clock::now();
+    std::chrono::duration<double> loop_duration = std::chrono::duration_cast<std::chrono::seconds>(
+            loop_end - loop_start);
+    std::cout << "Calkowity czas dzialania po zakonczeniu petli: " << loop_duration.count() << " sekund." << std::endl;
+
+// Zwolnij pamięć zaalokowaną dla dynamicznej tablicy
+    delete DynamicznaTablica;
 
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+Osoba * obj = new Osoba(645,"jajkeczko");
+Osoba * obj1 = new Osoba(76,"kajkeczko");
+Osoba * obj2 = new Osoba(234,"jajo");
+Osoba * obj3 = new Osoba(34,"jajkeczko");
+Osoba * obj4 = new Osoba(227656772,"kajkeczko");
+Osoba * obj5 = new Osoba(43453,"jajo");
+
+Dynamic_Array<Osoba*>*DynArray = new Dynamic_Array<Osoba*>();
+DynArray->addObj(&obj);
+DynArray->addObj(&obj1);
+DynArray->addObj(&obj2);
+DynArray->addObj(&obj3);
+DynArray->addObj(&obj4);
+DynArray->addObj(&obj5);
+DynArray->BubbleSort(true);
+printAll(DynArray);
+DynArray->BubbleSort(false);
+printAll(DynArray);
+ */
